@@ -120,14 +120,26 @@ public static class SplitterCore {
 	public static int ParseSize(string size, int defaultSize) {
 		Func<double, string, int> convertToBytes = (val, units) => {
 			switch (units.ToLower()) {
+				case "gb":
+				case "g":
+				case "gbytes":
+				case "gigabytes":
+					// This seems unlikely. But whatever.
+					return (int)Math.Round(val * 1024 * 1024 * 1024);					
 				case "mb":
 				case "m":
+				case "mbytes":
+				case "megabytes":
 					return (int)Math.Round(val * 1024 * 1024);
+				case "b":
+				case "bytes":
+					return (int)Math.Round(val);
 				case "kb":
 				case "k":
+				case "kilobytes":
+				case "kbytes":
+				default: // default to KB
 					return (int)Math.Round(val * 1024);
-				default:
-					return (int)Math.Round(val);
 			}
 		};
 
@@ -135,7 +147,7 @@ public static class SplitterCore {
 		if (match.Success) {
 			double d;
 			if (double.TryParse(match.Groups[1].Value, out d)) {
-				return convertToBytes(d, (match.Groups[2].Success ? match.Groups[2].Value : "b"));
+				return convertToBytes(d, (match.Groups[2].Success ? match.Groups[2].Value : ""));
 			}
 		}
 
