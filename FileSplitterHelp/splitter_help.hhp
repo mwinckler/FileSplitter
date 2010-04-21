@@ -1,0 +1,12 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=splitter_help.chm
+Display compile progress=No
+Language=0x409 English (United States)
+
+
+[FILES]
+index.htm
+
+[INFOTYPES]
+

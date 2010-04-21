@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<Title>Usage</Title>
+</HEAD>
+<BODY>
+<h1>File Splitter Usage</h1>
+
+<p>File Splitter is a utility designed to split large files into smaller parts and then reassemble those parts later on. It's useful for when you need to email yourself large files or files that corporate email scanners would otherwise strip off.</p>
+
+<p>The utility has two basic functions: Split and Join. These do what they say: the first one splits a file into multiple parts, and the second one joins parts back together into the original file.</p>
+
+<h2>Splitting a file</h2>
+
+<p>To split a file, follow these steps:</p>
+
+<ol>
+	<li>Enter the filename into the textbox (you can also drag and drop the file onto File Splitter).</li>
+	<li>Decide how large you want each split part to be and enter the value into the "Part size" textbox. You can enter values using just about any common notation for file size--for example, 5MB, 5m, 40 k, and 12 kb all work as expected. If you don't enter a unit, the program assumes the number is in KB.</li>
+	<li>Check the "Base64-encode parts" checkbox if you want the part files to be Base64-encoded. (Sometimes corporate email filters will strip off the binary .part files even though they're not executable; Base64-encoding your .part files can help get around this. The drawback is that Base64 will increase the .part file size to 4/3 of the original size. Thus, the parts will actually be 4/3 larger than the number you entered for .part size.)</li>
+	<li>Click the "Split" button. The program generates a series of .part files in the directory containing the file you are splitting.</li>
+</ol>
+
+<p>Note that File Splitter operates on a copy of your original file - the original remains unchanged.</p>
+
+<h2>Joining file parts</h2>
+
+<p>To reassemble a file that's been split, follow these steps:</p>
+
+<ol>
+	<li>Put all the .part files into the same directory.</li>
+	<li>Enter the filename of one of the .part files into the File textbox. (Any part will do; it doesn't have to be the first. You can also drag and drop a part onto the File Splitter window.)</li>
+	<li>Click Join. If the join is successful, File Splitter will re-create your original file and remove all the .part files for you.</li>
+</ol>
+
+<p>Note that when joining, the "Part size" and "Base64-encode parts" are ignored. (The program auto-detects them based on the .part file you selected.)</p>
+
+
+</BODY>
+</HTML>
