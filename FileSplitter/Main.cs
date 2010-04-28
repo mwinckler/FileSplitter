@@ -32,43 +32,78 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 
-namespace splitter_gui {
+namespace FileSplitter {
 	public partial class Main : Form {
 		public Main() {
 			InitializeComponent();
+			this.Load += (sndr, e) => {
+				UpdateSplitEnabled();
+			};
 		}
 
-		private void txtFilename_TextChanged(object sender, EventArgs e) {
-			btnSplit.Enabled = (File.Exists(txtFilename.Text));
+		private void WriteOutput(List<string> messages) {
+			txtOutput.Text = string.Join(Environment.NewLine, messages.ToArray());
+		}
+
+		private void UpdateSplitEnabled() {
+			txtPartSize.Enabled = chkSplit.Checked && File.Exists(txtFilename.Text);
+			btnSplit.Enabled = (txtPartSize.Enabled && !string.IsNullOrEmpty(txtPartSize.Text))
+								|| chkBase64Encode.Checked;
+
+		}
+
+		private void UpdateJoinEnabled() {
 			string fname = System.Text.RegularExpressions.Regex.Replace(txtFilename.Text, @"\.\d+\.part$", "");
 			btnJoin.Enabled = (File.Exists(
 				Path.GetDirectoryName(txtFilename.Text) + @"\" +
 					SplitterCore.GetPartFilename(
 						Path.GetFileName(fname)
 						, 0)
-				));
+				))
+				|| (txtFilename.Text.EndsWith(".base64") && File.Exists(txtFilename.Text));
+		}
+
+		private void txtFilename_TextChanged(object sender, EventArgs e) {
+			UpdateSplitEnabled();
+			UpdateJoinEnabled();
 
 		}
 
 		private void btnSplit_Click(object sender, EventArgs e) {
 			List<string> errors, messages;
-			int chunkSize = SplitterCore.ParseSize(txtPartSize.Text, 1024 * 1024 * 5);
-			if (SplitterCore.SplitFile(txtFilename.Text, chunkSize, chkBase64Encode.Checked, out messages, out errors)) {
-				txtOutput.Text = String.Join(Environment.NewLine, messages.ToArray());
+			if (chkSplit.Checked) {
+				int chunkSize = SplitterCore.ParseSize(txtPartSize.Text, 1024 * 1024 * 5);
+				if (SplitterCore.SplitFile(txtFilename.Text, chunkSize, chkBase64Encode.Checked, out messages, out errors)) {
+					WriteOutput(messages);
+				} else {
+					WriteOutput(errors);
+				}
+			} else if (chkBase64Encode.Checked) {
+				if (SplitterCore.Base64Encode(txtFilename.Text, out messages, out errors)) {
+					WriteOutput(messages);
+				} else {
+					WriteOutput(errors);
+				}
 			} else {
-				txtOutput.Text = String.Join(Environment.NewLine, errors.ToArray());
+				txtOutput.Text = "No operation selected; nothing done.";
 			}
-
 		}
 
 		private void btnJoin_Click(object sender, EventArgs e) {
 			List<string> errors, messages;
-			string fname = System.Text.RegularExpressions.Regex.Replace(txtFilename.Text, @"\.\d+\.part$", "");
-
-			if (SplitterCore.JoinFile(fname, out messages, out errors)) {
-				txtOutput.Text = String.Join(Environment.NewLine, messages.ToArray());
+			if (txtFilename.Text.EndsWith(".part")) {
+				if (SplitterCore.JoinFile(txtFilename.Text, out messages, out errors)) {
+					WriteOutput(messages);
+				} else {
+					WriteOutput(errors);
+				}
 			} else {
-				txtOutput.Text = String.Join(Environment.NewLine, errors.ToArray());
+				
+				if (SplitterCore.Base64Decode(txtFilename.Text, out messages, out errors)) {
+					WriteOutput(messages);
+				} else {
+					WriteOutput(errors);
+				}
 			}
 		}
 
@@ -103,6 +138,14 @@ namespace splitter_gui {
 
 		private void usageToolStripMenuItem_Click(object sender, EventArgs e) {
 			Help.ShowHelpIndex(this, "splitter_help.chm");
+		}
+
+		private void chkSplit_CheckedChanged(object sender, EventArgs e) {
+			UpdateSplitEnabled();
+		}
+
+		private void chkBase64Encode_CheckedChanged(object sender, EventArgs e) {
+			UpdateSplitEnabled();
 		}
 
 	}

@@ -1,4 +1,4 @@
-﻿namespace splitter_gui {
+﻿namespace FileSplitter {
 	partial class Main {
 		/// <summary>
 		/// Required designer variable.
@@ -39,9 +39,8 @@
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.usageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.label4 = new System.Windows.Forms.Label();
+			this.chkSplit = new System.Windows.Forms.CheckBox();
 			this.menuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -79,7 +78,7 @@
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(3, 67);
+			this.label2.Location = new System.Drawing.Point(173, 64);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(50, 13);
 			this.label2.TabIndex = 3;
@@ -87,7 +86,7 @@
 			// 
 			// txtPartSize
 			// 
-			this.txtPartSize.Location = new System.Drawing.Point(59, 64);
+			this.txtPartSize.Location = new System.Drawing.Point(229, 61);
 			this.txtPartSize.Name = "txtPartSize";
 			this.txtPartSize.Size = new System.Drawing.Size(100, 20);
 			this.txtPartSize.TabIndex = 4;
@@ -98,20 +97,20 @@
 			this.btnSplit.Enabled = false;
 			this.btnSplit.Location = new System.Drawing.Point(60, 166);
 			this.btnSplit.Name = "btnSplit";
-			this.btnSplit.Size = new System.Drawing.Size(75, 25);
+			this.btnSplit.Size = new System.Drawing.Size(100, 25);
 			this.btnSplit.TabIndex = 5;
-			this.btnSplit.Text = "Split";
+			this.btnSplit.Text = "Split/Encode";
 			this.btnSplit.UseVisualStyleBackColor = true;
 			this.btnSplit.Click += new System.EventHandler(this.btnSplit_Click);
 			// 
 			// btnJoin
 			// 
 			this.btnJoin.Enabled = false;
-			this.btnJoin.Location = new System.Drawing.Point(141, 166);
+			this.btnJoin.Location = new System.Drawing.Point(166, 166);
 			this.btnJoin.Name = "btnJoin";
-			this.btnJoin.Size = new System.Drawing.Size(75, 25);
+			this.btnJoin.Size = new System.Drawing.Size(100, 25);
 			this.btnJoin.TabIndex = 6;
-			this.btnJoin.Text = "Join";
+			this.btnJoin.Text = "Join/Decode";
 			this.btnJoin.UseVisualStyleBackColor = true;
 			this.btnJoin.Click += new System.EventHandler(this.btnJoin_Click);
 			// 
@@ -131,12 +130,13 @@
 			// chkBase64Encode
 			// 
 			this.chkBase64Encode.AutoSize = true;
-			this.chkBase64Encode.Location = new System.Drawing.Point(60, 92);
+			this.chkBase64Encode.Location = new System.Drawing.Point(59, 92);
 			this.chkBase64Encode.Name = "chkBase64Encode";
-			this.chkBase64Encode.Size = new System.Drawing.Size(127, 17);
+			this.chkBase64Encode.Size = new System.Drawing.Size(101, 17);
 			this.chkBase64Encode.TabIndex = 8;
-			this.chkBase64Encode.Text = "Base64-encode parts";
+			this.chkBase64Encode.Text = "Base64-encode";
 			this.chkBase64Encode.UseVisualStyleBackColor = true;
+			this.chkBase64Encode.CheckedChanged += new System.EventHandler(this.chkBase64Encode_CheckedChanged);
 			// 
 			// label3
 			// 
@@ -145,15 +145,14 @@
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(309, 51);
 			this.label3.TabIndex = 9;
-			this.label3.Text = "Encoding file parts as Base64 may help evade some email filtering systems that st" +
-				"rip off executable files or DLLs, but enabling this option will also increase th" +
-				"e part sizes by 4/3.";
+			this.label3.Text = "Encoding as Base64 may help evade some email filtering systems that strip off exe" +
+				"cutable files or DLLs, but enabling this option will also increase the part size" +
+				"s by 4/3.";
 			// 
 			// menuStrip1
 			// 
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.helpToolStripMenuItem});
+            this.fileToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Size = new System.Drawing.Size(418, 24);
@@ -173,36 +172,21 @@
 			// openToolStripMenuItem
 			// 
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
 			this.openToolStripMenuItem.Text = "Open...";
 			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(120, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
 			this.exitToolStripMenuItem.Text = "Exit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-			// 
-			// helpToolStripMenuItem
-			// 
-			this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.usageToolStripMenuItem});
-			this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-			this.helpToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
-			this.helpToolStripMenuItem.Text = "Help";
-			// 
-			// usageToolStripMenuItem
-			// 
-			this.usageToolStripMenuItem.Name = "usageToolStripMenuItem";
-			this.usageToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.usageToolStripMenuItem.Text = "Usage";
-			this.usageToolStripMenuItem.Click += new System.EventHandler(this.usageToolStripMenuItem_Click);
 			// 
 			// label4
 			// 
@@ -213,12 +197,24 @@
 			this.label4.TabIndex = 11;
 			this.label4.Text = "Output";
 			// 
+			// chkSplit
+			// 
+			this.chkSplit.AutoSize = true;
+			this.chkSplit.Location = new System.Drawing.Point(59, 63);
+			this.chkSplit.Name = "chkSplit";
+			this.chkSplit.Size = new System.Drawing.Size(92, 17);
+			this.chkSplit.TabIndex = 12;
+			this.chkSplit.Text = "Split into parts";
+			this.chkSplit.UseVisualStyleBackColor = true;
+			this.chkSplit.CheckedChanged += new System.EventHandler(this.chkSplit_CheckedChanged);
+			// 
 			// Main
 			// 
 			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(418, 457);
+			this.Controls.Add(this.chkSplit);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.chkBase64Encode);
@@ -261,9 +257,8 @@
 		private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem usageToolStripMenuItem;
 		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.CheckBox chkSplit;
 	}
 }
 

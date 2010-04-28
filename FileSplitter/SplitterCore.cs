@@ -68,24 +68,95 @@ public static class SplitterCore {
 		return errors.Count == 0;
 	}
 
+	public static bool Base64Encode(string filename, out List<string> messages, out List<string> errors) {
+		errors = new List<string>();
+		messages = new List<string>();
+		if (File.Exists(filename)) {
+			File.WriteAllText(filename + ".base64", Convert.ToBase64String(File.ReadAllBytes(filename)));
+			messages.Add("Successfully encoded file; saved as '" + filename + ".base64'.");
+		} else {
+			errors.Add("File does not exist: '" + filename + "'");
+		}
+		return errors.Count == 0;
+	}
+
+	public static bool Base64Decode(string filename, out List<string> messages, out List<string> errors) {
+		messages = new List<string>();
+		errors = new List<string>();
+		if (File.Exists(filename)) {
+			var file = new FileInfo(filename);
+			string newFilename = GetNewFilename(filename);
+
+			string contents = File.ReadAllText(filename);
+			if (IsBase64String(contents)) {
+				File.WriteAllBytes(newFilename, Convert.FromBase64String(contents));
+				messages.Add("Decoded file; wrote contents to '" + newFilename + "'.");
+				if (newFilename != filename) {
+					File.Delete(filename);
+					messages.Add("Removed .base64 original.");
+				}
+			} else {
+				errors.Add("Unable to decode: Specified file does not contain Base64 content.");
+			}
+		} else {
+			errors.Add("File does not exist: '" + filename + "'");
+		}
+		return errors.Count == 0;
+	}
+
+	/// <summary>
+	/// Gets the filename that will be written to when doing join/decode operations.
+	/// Useful for checking to see whether the file exists and confirming the overwrite with the user.
+	/// </summary>
+	/// <param name="filename"></param>
+	/// <returns></returns>
+	public static string GetNewFilename(string filename) {
+		string ret = filename;
+		var file = new FileInfo(filename);
+		string extension64 = ".base64";
+		string extensionPart = ".part";
+		if (file.Extension == extension64) {
+			ret = Path.Combine(file.Directory.FullName, file.Name.Substring(0, file.Name.Length - extension64.Length));
+		} else if (file.Extension == extensionPart) {
+			ret = Regex.Replace(filename, @"\.\d+\.part$", "");
+		}
+
+		if (File.Exists(ret)) {
+			var retInfo = new FileInfo(ret);
+			int i = 2;
+			Func<string> getCopyName = () => {
+				return Path.Combine(retInfo.Directory.FullName, retInfo.Name.Substring(0, retInfo.Name.Length - retInfo.Extension.Length)) + " (" + i + ")" + retInfo.Extension;
+			};
+
+			while (File.Exists(getCopyName())) {
+				i++;
+			}
+			ret = getCopyName();
+		}
+
+		return ret;
+	}
+
 	public static bool JoinFile(string filename, out List<string> messages, out List<string> errors) {
 		messages = new List<string>();
 		errors = new List<string>();
 
+		string originalFilename = Regex.Replace(filename, @"\.\d+\.part$", "");
+		string destinationFilename = GetNewFilename(filename);
 
 		// Find all file parts.
 		byte[] part;
 		int i = 0;
 
-		messages.Add("Joining split file " + filename + ".");
-		string partFilename = GetPartFilename(filename, 0);
+		messages.Add("Joining split file " + originalFilename + ".");
+		string partFilename = GetPartFilename(originalFilename, 0);
 		if (!File.Exists(partFilename)) {
-			errors.Add("No part files found for base filename '" + filename + "'.");
+			errors.Add("No part files found for base filename '" + originalFilename + "'.");
 		} else {
 			// Determine whether to apply base64 decoding to this file.
 			bool base64Decode = IsBase64String(File.ReadAllText(partFilename));
 
-			var output = File.OpenWrite(filename);
+			var output = File.OpenWrite(destinationFilename);
 
 			while (File.Exists(partFilename)) {
 				part = base64Decode
@@ -93,7 +164,7 @@ public static class SplitterCore {
 						: File.ReadAllBytes(partFilename);
 				output.Write(part, 0, part.Length);
 				messages.Add("  Successfully read part " + i.ToString() + ".");
-				partFilename = GetPartFilename(filename, ++i);
+				partFilename = GetPartFilename(originalFilename, ++i);
 			}
 			output.Close();
 			output.Dispose();
@@ -101,10 +172,10 @@ public static class SplitterCore {
 			// Upon success, remove the parts.
 			messages.Add("Removing .part files.");
 			i = 0;
-			partFilename = GetPartFilename(filename, 0);
+			partFilename = GetPartFilename(originalFilename, 0);
 			while (File.Exists(partFilename)) {
 				File.Delete(partFilename);
-				partFilename = GetPartFilename(filename, ++i);
+				partFilename = GetPartFilename(originalFilename, ++i);
 			}
 		}
 		messages.Add("Done.");
@@ -125,7 +196,7 @@ public static class SplitterCore {
 				case "gbytes":
 				case "gigabytes":
 					// This seems unlikely. But whatever.
-					return (int)Math.Round(val * 1024 * 1024 * 1024);					
+					return (int)Math.Round(val * 1024 * 1024 * 1024);
 				case "mb":
 				case "m":
 				case "mbytes":
